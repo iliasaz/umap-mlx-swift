@@ -23,12 +23,12 @@ func computeNNDescent(
     let d = data.dim(1)
 
     // --- Random initialization ---
-    // Initialize each point with k random neighbors
-    var indices = MLXArray.zeros([n, k], dtype: .int32)
-    for i in 0 ..< n {
-        let randIdx = MLXRandom.randInt(low: 0, high: Int32(n), [k], type: Int32.self)
-        indices[i] = randIdx
-    }
+    // Initialize each point with k random neighbors. The whole `[n, k]`
+    // matrix is sampled in a single batched call: a per-row loop allocates
+    // ~3-5 Metal buffers per iteration, which at production N (>100K) blows
+    // past the macOS `iogpu.rsrc_limit` sysctl (default 499,000 buffers
+    // per process) before any kNN math runs.
+    var indices = MLXRandom.randInt(low: Int32(0), high: Int32(n), [n, k], type: Int32.self)
     eval(indices)
 
     // Compute initial distances
