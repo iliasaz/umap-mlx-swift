@@ -28,8 +28,8 @@ func normalizeInput(
 /// Reduce dimensionality via PCA using eigendecomposition.
 ///
 /// Computes PCA by building the covariance matrix and extracting the
-/// top eigenvectors via `eigh`. The eigendecomposition runs on CPU for
-/// numerical stability.
+/// top eigenvectors via `symmetricEigh`. The eigendecomposition runs on CPU
+/// for numerical stability.
 ///
 /// - Parameters:
 ///   - data: Input array of shape `(n, d)`.
@@ -51,7 +51,7 @@ func pcaReduce(
     let cov = matmul(centered.T, centered, stream: stream) / MLXArray(Float(n - 1))
 
     // Eigendecomposition on CPU for numerical stability
-    let (_, eigvecs) = eigh(cov, stream: .cpu)
+    let (_, eigvecs) = symmetricEigh(cov, stream: .cpu)
     eval(eigvecs)
 
     // eigvecs columns are in ascending eigenvalue order; take the last `dimension`

@@ -3,8 +3,9 @@ import MLX
 
 /// Compute the eigenvalues and eigenvectors of a real symmetric matrix.
 ///
-/// Wraps `mlx_linalg_eigh` from the C API, which is not yet exposed in
-/// the Swift `MLXLinalg` module.
+/// Wraps `mlx_linalg_eigh` from the C API directly. Named `symmetricEigh`
+/// rather than `eigh` to avoid an ambiguous-overload clash with `MLX.eigh`,
+/// which newer mlx-swift now exposes publicly with the same call shape.
 ///
 /// - Parameters:
 ///   - array: A symmetric input matrix of shape `(n, n)`.
@@ -13,7 +14,7 @@ import MLX
 /// - Returns: A tuple `(eigenvalues, eigenvectors)` where eigenvalues has
 ///   shape `(n,)` in ascending order and eigenvectors has shape `(n, n)`
 ///   with columns being the corresponding eigenvectors.
-func eigh(
+func symmetricEigh(
     _ array: MLXArray,
     uplo: String = "L",
     stream: StreamOrDevice = .default
